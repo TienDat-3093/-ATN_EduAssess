@@ -23,7 +23,7 @@ export default function IndexQuestion() {
   /* const [questionId, setQuestionId] = useState(0); */
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage] = useState(20);
+  const [itemsPerPage] = useState(10);
   const [reload, setReload] = useState(false);
   const jsonData = JSON.stringify(data);
   localStorage.setItem("selects", jsonData);
@@ -37,7 +37,11 @@ export default function IndexQuestion() {
   console.log("re", reload);
   const getQuestionsToUser = async () => {
     try {
-      const response = await fetchQuestionsToUser(user.id,currentPage,itemsPerPage);
+      const response = await fetchQuestionsToUser(
+        user.id,
+        currentPage,
+        itemsPerPage
+      );
       if (
         response &&
         response.data &&
@@ -180,7 +184,7 @@ export default function IndexQuestion() {
   }, [questionId]); */
   useEffect(() => {
     getQuestionsToSearch();
-  }, [keyword, reload,currentPage]);
+  }, [keyword, reload, currentPage]);
   useEffect(() => {
     getQuestionsToFilter();
   }, [selectedTopics, selectedLevels, reload]);
@@ -203,7 +207,7 @@ export default function IndexQuestion() {
         : prev.filter((id) => id !== topicId)
     );
   };
-  console.log('key',keyword)
+  console.log("key", keyword);
   const handleInputSearch = (event) => {
     const keyword = event.target.value;
     if (event.key === "Enter") {
@@ -508,7 +512,7 @@ export default function IndexQuestion() {
                           </div>
                         </form>
                       </div>
-                      
+
                       {/* End of tab pane for basic information */}
 
                       {/* Tab pane for questions */}
@@ -528,54 +532,60 @@ export default function IndexQuestion() {
                       <button className="btn btn-secondary">Trở về</button>
                     </div> */}
                   </div>
-                  
                 </div>
               </div>
-              <div className="row mt-5 justify-content-center align-items-center ">
-                <div className="col-auto">
-                  <div className="block-27">
-                    <ul>
-                      <li
-                        className={currentPage === 1 ? "disabled" : ""}
-                        onClick={() => {
-                          if (currentPage > 1) setCurrentPage(currentPage - 1);
-                        }}
-                      >
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                          &lt;
-                        </a>
-                      </li>
-                      {Array.from({ length: totalPages }, (_, index) => (
+              {totalPages === 2 && (
+                <div className="row mt-5 justify-content-center align-items-center ">
+                  <div className="col-auto">
+                    <div className="block-27">
+                      <ul>
                         <li
-                          key={index}
-                          className={currentPage === index + 1 ? "active" : ""}
-                          onClick={() => setCurrentPage(index + 1)}
+                          className={currentPage === 1 ? "disabled" : ""}
+                          onClick={() => {
+                            if (currentPage > 1)
+                              setCurrentPage(currentPage - 1);
+                          }}
                         >
                           <a href="#" onClick={(e) => e.preventDefault()}>
-                            {index + 1}
+                            &lt;
                           </a>
                         </li>
-                      ))}
-                      <li
-                        className={currentPage === totalPages ? "disabled" : ""}
-                        onClick={() => {
-                          if (currentPage < totalPages)
-                            setCurrentPage(currentPage + 1);
-                        }}
-                      >
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                          &gt;
-                        </a>
-                      </li>
-                    </ul>
+                        {Array.from({ length: totalPages }, (_, index) => (
+                          <li
+                            key={index}
+                            className={
+                              currentPage === index + 1 ? "active" : ""
+                            }
+                            onClick={() => setCurrentPage(index + 1)}
+                          >
+                            <a href="#" onClick={(e) => e.preventDefault()}>
+                              {index + 1}
+                            </a>
+                          </li>
+                        ))}
+                        <li
+                          className={
+                            currentPage === totalPages ? "disabled" : ""
+                          }
+                          onClick={() => {
+                            if (currentPage < totalPages)
+                              setCurrentPage(currentPage + 1);
+                          }}
+                        >
+                          <a href="#" onClick={(e) => e.preventDefault()}>
+                            &gt;
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </section>
-      
+
       {/* Show detail answer */}
       <div
         className="modal fade"

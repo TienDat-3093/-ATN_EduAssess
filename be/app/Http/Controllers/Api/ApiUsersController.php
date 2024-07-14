@@ -104,12 +104,24 @@ class ApiUsersController extends Controller
             } else {
                 $path = $data["image"];
             }
+
         }
-        $dataToUpdate = [
-            'image' => $path,
-            'displayname' => $data["displayName"],
-            'date_of_birth' => $data["birthDay"]
-        ];
+        if(!empty($path))
+        {
+            $dataToUpdate = [
+                'image' => $path,
+                'displayname' => $data["displayName"],
+                'date_of_birth' => $data["birthDay"]
+            ];
+        }
+        else{
+            $dataToUpdate = [
+                'image' => null,
+                'displayname' => $data["displayName"],
+                'date_of_birth' => $data["birthDay"]
+            ];
+        }
+
         $user->update($dataToUpdate);
 
         return response()->json([
@@ -134,7 +146,7 @@ class ApiUsersController extends Controller
             ]);
         }
         return response()->json([
-            'success' => true,
+            'success' => false,
             'message' => "Wrong password",
 
         ]);

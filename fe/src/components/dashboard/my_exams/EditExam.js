@@ -39,7 +39,7 @@ export default function EditExam() {
   const [password, setPassword] = useState("");
   const [examText, setExamText] = useState("");
   console.log("data", data);
-  console.log("resedit", loadExam);
+  console.log("privacy", privacy);
   console.log("pass", password);
   const handleUploadImage = (e) => {
     const file = e.target.files[0];
@@ -52,7 +52,7 @@ export default function EditExam() {
     return regex.test(url);
   };
   const handleTagsSelect = (e) => {
-    const tagId = e.target.id;
+    const tagId = e.target.value;
     setSelectedTags((prev) =>
       e.target.checked ? [...prev, tagId] : prev.filter((id) => id !== tagId)
     );
@@ -62,7 +62,8 @@ export default function EditExam() {
     setPassword(e.target.value);
   };
 
-  const handlePrivacy = (val) => {
+  const handlePrivacy = (e) => {
+    const val = e.target.value;
     setPrivacy(Number(val));
   };
 
@@ -153,6 +154,9 @@ export default function EditExam() {
       setSelectedTags(selectTag);
     }
     setPassword(loadExam.password);
+    if (loadExam && loadExam.privacy) {
+      setPrivacy(loadExam.privacy);
+    }
   }, [loadExam]);
   useEffect(() => {
     /* getQuestionsToUser(); */
@@ -319,7 +323,8 @@ export default function EditExam() {
                                             <input
                                               type="checkbox"
                                               className="form-check-input"
-                                              id={tag.id}
+                                              id={`tag_${tag.id}`}
+                                              
                                               name="tag"
                                               checked={
                                                 selectedTags &&
@@ -332,7 +337,7 @@ export default function EditExam() {
                                             />
                                             <label
                                               className="form-check-label"
-                                              htmlFor={tag.id}
+                                              htmlFor={`tag_${tag.id}`}
                                             >
                                               {tag.name}
                                             </label>
@@ -354,8 +359,9 @@ export default function EditExam() {
                                   className="form-check-input"
                                   id="privacy-private"
                                   name="privacy"
-                                  defaultChecked={privacy === 1}
-                                  onChange={() => handlePrivacy(1)}
+                                  value={1}
+                                  checked={privacy === 1}
+                                  onChange={handlePrivacy}
                                 />
                                 <label
                                   className="form-check-label"
@@ -370,8 +376,9 @@ export default function EditExam() {
                                   className="form-check-input"
                                   id="privacy-public"
                                   name="privacy"
-                                  defaultChecked={privacy === 0}
-                                  onChange={() => handlePrivacy(0)}
+                                  value= {0}
+                                  checked={privacy === 0}
+                                  onChange={handlePrivacy}
                                 />
                                 <label
                                   className="form-check-label"

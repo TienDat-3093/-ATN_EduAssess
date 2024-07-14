@@ -134,8 +134,8 @@ export default function CreateQuestion() {
           },
         });
         Toast.fire({
-          icon: "success",
-          title: "Thêm câu hỏi thành công",
+          icon: response.data.success?"success":"warning",
+          title: response.data.message,
         });
         
         navigate("/dashboard/questions");

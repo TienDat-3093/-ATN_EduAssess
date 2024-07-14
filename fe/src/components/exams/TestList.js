@@ -24,7 +24,7 @@ export default function TestList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage] = useState(9);
-  const [isloading,setIsLoading] = useState(false);
+  const [isloading, setIsLoading] = useState(false);
   console.log("filter", filter);
   console.log("loadFilter", loadFilter);
 
@@ -144,7 +144,7 @@ export default function TestList() {
     getExamToFilterAll();
   }, [filter, currentPage]);
   return (
-    <> 
+    <>
       <section className="ftco-section bg-light pt-5">
         <div className="container">
           <div className="row">
@@ -342,6 +342,9 @@ export default function TestList() {
                             <Moment format="DD-MM-YYYY">
                               {exam.created_at}
                             </Moment>
+                            <span style={{ float: "right" }}>
+                              👁️ {exam && exam.done_count} plays
+                            </span>
                           </p>
                           <button
                             className="btn text-muted"
@@ -409,46 +412,53 @@ export default function TestList() {
                   </div>
                 )}
               </div>
-              <div className="row mt-5">
-                <div className="col">
-                  <div className="block-27">
-                    <ul>
-                      <li
-                        className={currentPage === 1 ? "disabled" : ""}
-                        onClick={() => {
-                          if (currentPage > 1) setCurrentPage(currentPage - 1);
-                        }}
-                      >
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                          &lt;
-                        </a>
-                      </li>
-                      {Array.from({ length: totalPages }, (_, index) => (
+              {totalPages === 2 && (
+                <div className="row mt-5">
+                  <div className="col">
+                    <div className="block-27">
+                      <ul>
                         <li
-                          key={index}
-                          className={currentPage === index + 1 ? "active" : ""}
-                          onClick={() => setCurrentPage(index + 1)}
+                          className={currentPage === 1 ? "disabled" : ""}
+                          onClick={() => {
+                            if (currentPage > 1)
+                              setCurrentPage(currentPage - 1);
+                          }}
                         >
                           <a href="#" onClick={(e) => e.preventDefault()}>
-                            {index + 1}
+                            &lt;
                           </a>
                         </li>
-                      ))}
-                      <li
-                        className={currentPage === totalPages ? "disabled" : ""}
-                        onClick={() => {
-                          if (currentPage < totalPages)
-                            setCurrentPage(currentPage + 1);
-                        }}
-                      >
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                          &gt;
-                        </a>
-                      </li>
-                    </ul>
+                        {Array.from({ length: totalPages }, (_, index) => (
+                          <li
+                            key={index}
+                            className={
+                              currentPage === index + 1 ? "active" : ""
+                            }
+                            onClick={() => setCurrentPage(index + 1)}
+                          >
+                            <a href="#" onClick={(e) => e.preventDefault()}>
+                              {index + 1}
+                            </a>
+                          </li>
+                        ))}
+                        <li
+                          className={
+                            currentPage === totalPages ? "disabled" : ""
+                          }
+                          onClick={() => {
+                            if (currentPage < totalPages)
+                              setCurrentPage(currentPage + 1);
+                          }}
+                        >
+                          <a href="#" onClick={(e) => e.preventDefault()}>
+                            &gt;
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

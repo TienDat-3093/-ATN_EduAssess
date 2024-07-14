@@ -69,6 +69,7 @@ export default function Profile() {
           icon: "success",
           title: response.data.message,
         });
+        handleGetUser();
       }
       console.log("ress", response);
     } catch (error) {}
@@ -90,7 +91,9 @@ export default function Profile() {
         icon: "warning",
         title: "The new password and confirmation password do not match",
       });
+
       handleGetUser();
+      return;
     }
     try {
       const formData = {
@@ -112,7 +115,7 @@ export default function Profile() {
           },
         });
         Toast.fire({
-          icon: "success",
+          icon: response.data.success?"success":"warning",
           title: response.data.message,
         });
         handleGetUser();

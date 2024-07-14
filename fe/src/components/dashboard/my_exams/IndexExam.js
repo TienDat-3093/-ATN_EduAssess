@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import SideBar from "../SideBar";
-import Moment from 'react-moment';
-import moment from 'moment';
+import Moment from "react-moment";
+import moment from "moment";
 import {
   fetchExamsToUser,
   fetchDeleteExam,
@@ -43,12 +43,16 @@ export default function IndexExam() {
   const [keyword, setKeyWord] = useState("");
   const [news, setNews] = useState("");
   const [outstanding, setOutstanding] = useState("");
-  console.log("news", news,'outstanding',outstanding);
+  console.log("news", news, "outstanding", outstanding);
 
   const getExamsToUser = async () => {
     console.log("id", user.id);
     try {
-      const response = await fetchExamsToUser(user.id,currentPage,itemsPerPage);
+      const response = await fetchExamsToUser(
+        user.id,
+        currentPage,
+        itemsPerPage
+      );
       if (response) {
         setData(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -66,7 +70,12 @@ export default function IndexExam() {
   };
   const getExamToSearch = async () => {
     try {
-      const response = await fetchExamToSearch(user.id, keyword,currentPage,itemsPerPage);
+      const response = await fetchExamToSearch(
+        user.id,
+        keyword,
+        currentPage,
+        itemsPerPage
+      );
       if (response) {
         setData(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -86,15 +95,21 @@ export default function IndexExam() {
   };
   const getExamToFilter = async () => {
     try {
-      const response = await fetchExamToFilter(user.id, news, outstanding,currentPage,itemsPerPage);
+      const response = await fetchExamToFilter(
+        user.id,
+        news,
+        outstanding,
+        currentPage,
+        itemsPerPage
+      );
       if (response) {
         setData(response.data.data);
         setTotalPages(response.data.totalPages);
       }
-      console.log("redf",response);
+      console.log("redf", response);
     } catch (error) {}
   };
-  console.log('data',data)
+  console.log("data", data);
   const handleDeleteExam = async (id) => {
     console.log("id", id);
     const formData = {
@@ -147,13 +162,13 @@ export default function IndexExam() {
   useEffect(() => {
     getExamsToUser();
   }, [currentPage]);
-  useEffect(()=>{
+  useEffect(() => {
     getExamToFilter();
-    console.log(+1)
-  },[news,outstanding,currentPage])
+    console.log(+1);
+  }, [news, outstanding, currentPage]);
   useEffect(() => {
     getExamToSearch();
-  }, [keyword,currentPage]);
+  }, [keyword, currentPage]);
   return (
     <>
       <section className="ftco-section bg-light pt-5">
@@ -255,8 +270,14 @@ export default function IndexExam() {
                             >
                               <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z" />
                               <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0" />
-                            </svg>{"  "}
-                            <Moment format="DD-MM-YYYY">{exam.created_at}</Moment>
+                            </svg>
+                            {"  "}
+                            <Moment format="DD-MM-YYYY">
+                              {exam.created_at}
+                            </Moment>
+                            <span style={{ float: "right" }}>
+                              👁️ {exam && exam.done_count} plays
+                            </span>
                           </p>
                           <NavLink
                             className="btn text-primary"
@@ -371,51 +392,58 @@ export default function IndexExam() {
                       className="img-fluid"
                     />
                     <div className="empty-result-section__title">
-                    No result is found
+                      No result is found
                     </div>
                   </div>
                 )}
               </div>
-              <div className="row mt-5">
-                <div className="col">
-                  <div className="block-27">
-                    <ul>
-                      <li
-                        className={currentPage === 1 ? "disabled" : ""}
-                        onClick={() => {
-                          if (currentPage > 1) setCurrentPage(currentPage - 1);
-                        }}
-                      >
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                          &lt;
-                        </a>
-                      </li>
-                      {Array.from({ length: totalPages }, (_, index) => (
+              {totalPages === 2 && (
+                <div className="row mt-5">
+                  <div className="col">
+                    <div className="block-27">
+                      <ul>
                         <li
-                          key={index}
-                          className={currentPage === index + 1 ? "active" : ""}
-                          onClick={() => setCurrentPage(index + 1)}
+                          className={currentPage === 1 ? "disabled" : ""}
+                          onClick={() => {
+                            if (currentPage > 1)
+                              setCurrentPage(currentPage - 1);
+                          }}
                         >
                           <a href="#" onClick={(e) => e.preventDefault()}>
-                            {index + 1}
+                            &lt;
                           </a>
                         </li>
-                      ))}
-                      <li
-                        className={currentPage === totalPages ? "disabled" : ""}
-                        onClick={() => {
-                          if (currentPage < totalPages)
-                            setCurrentPage(currentPage + 1);
-                        }}
-                      >
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                          &gt;
-                        </a>
-                      </li>
-                    </ul>
+                        {Array.from({ length: totalPages }, (_, index) => (
+                          <li
+                            key={index}
+                            className={
+                              currentPage === index + 1 ? "active" : ""
+                            }
+                            onClick={() => setCurrentPage(index + 1)}
+                          >
+                            <a href="#" onClick={(e) => e.preventDefault()}>
+                              {index + 1}
+                            </a>
+                          </li>
+                        ))}
+                        <li
+                          className={
+                            currentPage === totalPages ? "disabled" : ""
+                          }
+                          onClick={() => {
+                            if (currentPage < totalPages)
+                              setCurrentPage(currentPage + 1);
+                          }}
+                        >
+                          <a href="#" onClick={(e) => e.preventDefault()}>
+                            &gt;
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

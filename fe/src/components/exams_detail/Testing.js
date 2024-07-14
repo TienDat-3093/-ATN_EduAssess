@@ -50,7 +50,7 @@ export default function Testing() {
 
       return (
         <span className="font-weight-bold">
-          {"Number of correct sentences: " + correctAnswersCount + "/" + results.length}
+          {"Number of correct questions: " + correctAnswersCount + "/" + results.length}
         </span>
       );
     }
@@ -187,7 +187,7 @@ export default function Testing() {
           <div className="card-body">
             <div className="bg-light p-2 mb-3 rounded d-flex justify-content-between align-items-center">
               <span className="font-weight-bold">
-                Total number of sentences:{" "}
+                Total questions:{" "}
                 {examsData && examsData.questions.length}
               </span>
               {otificationOfResults()}
@@ -209,14 +209,11 @@ export default function Testing() {
 
                 return (
                   <>
-                    <div className="card mb-3" key={index}>
+                    <div className="card mb-3 text-dark" key={index} >
                       <div className={`card-body ${isCorrect}`}>
                         <p className="font-weight-bold">
                           Câu {index + 1}:{" "}
-                          {question.question_text.replace(
-                            /<\/?(p|strong|i)[^>]*>/gi,
-                            ""
-                          )}
+                          <span dangerouslySetInnerHTML={{ __html: question.question_text }} />
                         </p>
                         {question && question.question_img ? (
                           <div className="mb-1">
@@ -246,7 +243,7 @@ export default function Testing() {
                                 }
                                 disabled={submitted}
                                 name={`answer_${question.id}`}
-                                id={`answer_${key}`}
+                                id={`answer${question.id}_${key}`}
                                 value={key}
                                 onChange={() =>
                                   handleAnswerSelection(
@@ -258,7 +255,7 @@ export default function Testing() {
                               />
                               <label
                                 className="form-check-block mb-1"
-                                htmlFor={`answer_${key}`}
+                                htmlFor={`answer${question.id}_${key}`}
                               >
                                 {answer.text}
                               </label>
@@ -302,7 +299,7 @@ export default function Testing() {
               Submit
             </button>
           ) : user ? (
-            <NavLink to="/dashboard/my-exams" className="btn btn-primary w-100">
+            <NavLink to="/dashboard/my-exams/exam-results" className="btn btn-primary w-100">
               Return
             </NavLink>
           ) : (

@@ -405,8 +405,11 @@ class ApiTestsController extends Controller
             }
         }
         $test->tag_data = json_encode(array_unique($data["tags"]));
+        if(!empty($data["password"]))
+        {
+            $test->password = $data["password"];
+        }
 
-        $test->password = $data["password"];
 
         $test->privacy = (int)$data["privacy"];
         $test->user_id = (int)$data["userId"];

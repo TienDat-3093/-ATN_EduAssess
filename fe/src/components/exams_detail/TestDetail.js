@@ -168,10 +168,10 @@ export default function TestDetail() {
                     <div className="d-flex justify-content-between">
                       <span>
                         📄 {data && data.questions && data.questions.length}{" "}
-                        sentence
+                        questions
                       </span>
 
-                      <span>👁️ {data && data.done_count} exam turn</span>
+                      <span>👁️ {data && data.done_count} plays</span>
                     </div>
                   </div>
                 </div>
@@ -257,10 +257,7 @@ export default function TestDetail() {
                           <div key={index} className="mt-3 text-dark">
                             <p className="font-weight-bold">
                               Câu {index + 1}:{" "}
-                              {question.question_text.replace(
-                                /<\/?(p|strong|i)[^>]*>/gi,
-                                ""
-                              )}
+                              <span dangerouslySetInnerHTML={{ __html: question.question_text }} />
                             </p>
                             {question.question_img && (
                               <img
@@ -332,7 +329,7 @@ export default function TestDetail() {
                               168 câu
                             </span>{" "} */}
                               <span className="badge badge-secondary">
-                                {exam.done_count} exam turn
+                                {exam.done_count} plays
                               </span>
                             </NavLink>
                           </li>
@@ -340,55 +337,7 @@ export default function TestDetail() {
                     </ul>
                   </div>
                 </div>
-                {/* <div className="card mb-4 bg-white p-4 ftco-animate fadeInUp">
-                  <div className="card-body">
-                    <h5 className="card-title">Chi tiết</h5>
-                    <form className="browse-form">
-                      <p>
-                        <strong>Author:</strong>
-                      </p>
-                      <p>
-                        <strong>Date:</strong>
-                      </p>
-                      <p>
-                        <strong>Topic:</strong>
-                      </p>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id="option-category-2"
-                          name="vehicle"
-                          checked=""
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="option-category-2"
-                        >
-                          Randomize the question
-                        </label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          id="option-category-3"
-                          name="vehicle"
-                          checked={"randomizeAnswers"}
-                          onChange={() => {
-                            setRandomizeAnswers("!randomizeAnswers");
-                          }}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="option-category-3"
-                        >
-                          Randomize the answer
-                        </label>
-                      </div>
-                    </form>
-                  </div>
-                </div> */}
+                
               </div>
             </div>
           </div>

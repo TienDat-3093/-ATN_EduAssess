@@ -61,46 +61,48 @@ export default function UserStats() {
             </table>
           </div>
         </div>
-        <div className="row mt-5 justify-content-center align-items-center">
-          <div className="col-auto">
-            <div className="block-27">
-              <ul>
-                <li
-                  className={currentPage === 1 ? "disabled" : ""}
-                  onClick={() => {
-                    if (currentPage > 1) setCurrentPage(currentPage - 1);
-                  }}
-                >
-                  <a href="#" onClick={(e) => e.preventDefault()}>
-                    &lt;
-                  </a>
-                </li>
-                {Array.from({ length: totalPages }, (_, index) => (
+        {totalPages === 2 && (
+          <div className="row mt-5 justify-content-center align-items-center">
+            <div className="col-auto">
+              <div className="block-27">
+                <ul>
                   <li
-                    key={index}
-                    className={currentPage === index + 1 ? "active" : ""}
-                    onClick={() => setCurrentPage(index + 1)}
+                    className={currentPage === 1 ? "disabled" : ""}
+                    onClick={() => {
+                      if (currentPage > 1) setCurrentPage(currentPage - 1);
+                    }}
                   >
                     <a href="#" onClick={(e) => e.preventDefault()}>
-                      {index + 1}
+                      &lt;
                     </a>
                   </li>
-                ))}
-                <li
-                  className={currentPage === totalPages ? "disabled" : ""}
-                  onClick={() => {
-                    if (currentPage < totalPages)
-                      setCurrentPage(currentPage + 1);
-                  }}
-                >
-                  <a href="#" onClick={(e) => e.preventDefault()}>
-                    &gt;
-                  </a>
-                </li>
-              </ul>
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <li
+                      key={index}
+                      className={currentPage === index + 1 ? "active" : ""}
+                      onClick={() => setCurrentPage(index + 1)}
+                    >
+                      <a href="#" onClick={(e) => e.preventDefault()}>
+                        {index + 1}
+                      </a>
+                    </li>
+                  ))}
+                  <li
+                    className={currentPage === totalPages ? "disabled" : ""}
+                    onClick={() => {
+                      if (currentPage < totalPages)
+                        setCurrentPage(currentPage + 1);
+                    }}
+                  >
+                    <a href="#" onClick={(e) => e.preventDefault()}>
+                      &gt;
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
