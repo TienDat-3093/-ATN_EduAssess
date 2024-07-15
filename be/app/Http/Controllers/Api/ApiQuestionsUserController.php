@@ -362,7 +362,7 @@ class ApiQuestionsUserController extends Controller
         }
 
         if ($question->trashed()) {
-            $topic = Topics::withTrashed()->find($question->topic_id);
+            /* $topic = Topics::withTrashed()->find($question->topic_id);
             return response()->json([
                 'success' => true,
                 'message' => $topic::trashed()
@@ -372,7 +372,7 @@ class ApiQuestionsUserController extends Controller
                     'success' => false,
                     'message' => "Unable to restore, topic does not exist"
                 ]);
-            }
+            } */
             $question->restore();
             return response()->json([
                 'success' => true,
