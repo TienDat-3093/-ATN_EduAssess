@@ -392,6 +392,9 @@ export default function IndexQuestion() {
                                               overflow: "hidden",
                                               textOverflow: "ellipsis",
                                             }}
+                                            aria-label ={DOMPurify.sanitize(
+                                              question.question_text
+                                            )}
                                             dangerouslySetInnerHTML={{
                                               __html: DOMPurify.sanitize(
                                                 question.question_text
@@ -534,7 +537,7 @@ export default function IndexQuestion() {
                   </div>
                 </div>
               </div>
-              {totalPages === 2 && (
+              {totalPages >= 2 && (
                 <div className="row mt-5 justify-content-center align-items-center ">
                   <div className="col-auto">
                     <div className="block-27">

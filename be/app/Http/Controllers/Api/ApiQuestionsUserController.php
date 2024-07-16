@@ -27,9 +27,15 @@ class ApiQuestionsUserController extends Controller
         $userId = $request->query('userId');
 
         $listQuestions = 0;
+        if( !$itemsPerPage)
+        {
+            $listQuestions = QuestionUser::where('user_id', '=', $userId)->get();
+        }
+        else{
+            $listQuestions = QuestionUser::where('user_id', '=', $userId)->withTrashed()->skip(($currentPage - 1) * $itemsPerPage)
+            ->take($itemsPerPage)->get();
+        }
 
-        $listQuestions = QuestionUser::where('user_id', '=', $userId)->withTrashed()->skip(($currentPage - 1) * $itemsPerPage)
-        ->take($itemsPerPage)->get();
         $totalQuestions = QuestionUser::whereNull('deleted_at')->where('user_id', '=', $userId)->count();
         foreach ($listQuestions as $question) {
             $question->question_url = asset($question->question_img);
@@ -56,7 +62,7 @@ class ApiQuestionsUserController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $processed,
-                'totalPages' => ceil($totalQuestions / $itemsPerPage),
+                'totalPages' =>  $itemsPerPage ? ceil($totalQuestions / $itemsPerPage) : 1,
             ]);
         }
         return response()->json([

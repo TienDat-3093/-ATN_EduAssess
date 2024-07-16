@@ -12,7 +12,7 @@ export default function TestDetail() {
   const [password, setPassword] = useState("");
   const [relatedExams, setRelatedExams] = useState("");
   const navigate = useNavigate();
-  console.log("datta", password);
+  ;
   console.log("relatedExams", relatedExams);
   const extractIdFromName = (name) => {
     const match = name.match(/^(\d+)-/);
@@ -22,6 +22,7 @@ export default function TestDetail() {
     const password = e.target.value;
     setPassword(password);
   };
+  
   const generateSlug = (name) => {
     return name
       .toString()
@@ -32,6 +33,7 @@ export default function TestDetail() {
       .replace(/^-+/, "")
       .replace(/-+$/, "");
   };
+  
   useEffect(() => {
     let id = extractIdFromName(name);
 
@@ -152,7 +154,7 @@ export default function TestDetail() {
         });
       }
     };
-
+    console.log("datta", data.password)
     return (
       <>
         <section className="ftco-section bg-light pt-5">
@@ -199,7 +201,7 @@ export default function TestDetail() {
                         </label>
                       </div>
 
-                      <div className="form-check">
+                      {/* <div className="form-check">
                         <input
                           className="form-check-input"
                           type="checkbox"
@@ -217,7 +219,7 @@ export default function TestDetail() {
                         >
                           Randomize answers
                         </label>
-                      </div>
+                      </div> */}
                     </div>
                     <form className="browse-form">
                       {data && data.password && data.password ? (
@@ -250,14 +252,19 @@ export default function TestDetail() {
                         Start
                       </button>
                     </form>
-                    <div className="mt-4">
+
+                   {data && !data.password ?  (<div className="mt-4">
                       {data &&
                         data.questions &&
                         data.questions.map((question, index) => (
                           <div key={index} className="mt-3 text-dark">
                             <p className="font-weight-bold">
                               Câu {index + 1}:{" "}
-                              <span dangerouslySetInnerHTML={{ __html: question.question_text }} />
+                              <span
+                                dangerouslySetInnerHTML={{
+                                  __html: question.question_text,
+                                }}
+                              />
                             </p>
                             {question.question_img && (
                               <img
@@ -301,7 +308,7 @@ export default function TestDetail() {
                             )}
                           </div>
                         ))}
-                    </div>
+                    </div>):""}
                   </div>
                 </div>
               </div>
@@ -337,7 +344,6 @@ export default function TestDetail() {
                     </ul>
                   </div>
                 </div>
-                
               </div>
             </div>
           </div>

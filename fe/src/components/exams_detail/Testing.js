@@ -20,6 +20,8 @@ export default function Testing() {
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
   console.log("userResponses", userResponses);
+  console.log("examsData", examsData);
+  console.log("results", results);
   const timerIntervalRef = useRef(null);
   useEffect(() => {
     if (isTimerRunning) {
@@ -49,8 +51,21 @@ export default function Testing() {
         : 0;
 
       return (
-        <span className="font-weight-bold">
-          {"Number of correct questions: " + correctAnswersCount + "/" + results.length}
+        <span
+          className="font-weight-bold"
+          style={{
+            position: "fixed",
+            top: `${topPosition}px`,
+            right: "225px",
+            backgroundColor: "white",
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            zIndex: 1000,
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          {"Correct questions: " + correctAnswersCount + "/" + results.length}
         </span>
       );
     }
@@ -78,7 +93,7 @@ export default function Testing() {
   };
   const handleSubmit = () => {
     if (
-      userResponses.every(
+      !userResponses.every(
         (response) =>
           response !== undefined &&
           response !== null &&
@@ -86,6 +101,60 @@ export default function Testing() {
           response.length > 0
       )
     ) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-danger",
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Are you sure?",
+          text: "Are you sure to submit your exam?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, delete it!",
+
+          cancelButtonText: "No, cancel!",
+          reverseButtons: true,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            const endTime = new Date().getTime();
+
+            setEndTime(endTime);
+            setIsTimerRunning(false);
+            if (!examsData) return;
+            const results = examsData.questions.map((question, index) => {
+              const userAnswerKeys = userResponses[index];
+              const correctAnswerIndexes = Object.values(question.answers)
+                .map((answer, index) => (answer.is_correct === 1 ? index : -1))
+                .filter((index) => index !== -1);
+
+              const isCorrect =
+                correctAnswerIndexes.length === userAnswerKeys.length &&
+                correctAnswerIndexes.every(
+                  (id, idx) => userAnswerKeys[idx] === id
+                );
+
+              return {
+                questionId: question.id,
+                userAnswerKeys,
+                correctAnswerIndexes,
+                isCorrect,
+              };
+            });
+            setResults(results);
+            setSubmitted(true);
+          } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+          ) {
+            return;
+          }
+        });
+    } else {
       const endTime = new Date().getTime();
 
       setEndTime(endTime);
@@ -110,7 +179,9 @@ export default function Testing() {
       });
       setResults(results);
       setSubmitted(true);
-    } else {
+    }
+
+    /*}  else {
       const Toast = Swal.mixin({
         toast: true,
         position: "top-end",
@@ -126,7 +197,7 @@ export default function Testing() {
         icon: "warning",
         title: "The answer has not been selected",
       });
-    }
+    } */
   };
 
   console.log("examData", examsData);
@@ -174,6 +245,22 @@ export default function Testing() {
     }
   }, [submitted, results]);
 
+  const [topPosition, setTopPosition] = useState(200);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      setTopPosition(Math.max(15, 125 - scrollTop));
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <>
       <div className="container mt-4">
@@ -187,12 +274,24 @@ export default function Testing() {
           <div className="card-body">
             <div className="bg-light p-2 mb-3 rounded d-flex justify-content-between align-items-center">
               <span className="font-weight-bold">
-                Total questions:{" "}
-                {examsData && examsData.questions.length}
+                Total questions: {examsData && examsData.questions.length}
               </span>
               {otificationOfResults()}
-              <span className="font-weight-bold">
-                Time: {formatTime(currentTime)}
+              <span
+                className="font-weight-bold"
+                style={{
+                  position: "fixed",
+                  top: `${topPosition}px`,
+                  right: "100px",
+                  backgroundColor: "white",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                  zIndex: 1000,
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                {formatTime(currentTime)}
               </span>
             </div>
             {/* Question 1 */}
@@ -206,14 +305,26 @@ export default function Testing() {
                       ? "border border-success"
                       : "border border-danger"
                     : "";
+                const isAnswerCorrect =
+                  results &&
+                  results !== null &&
+                  results[index].correctAnswerIndexes[0];
+                const userRes =
+                  results &&
+                  results !== null &&
+                  results[index].userAnswerKeys[0];
 
                 return (
                   <>
-                    <div className="card mb-3 text-dark" key={index} >
+                    <div className="card mb-3 text-dark" key={index}>
                       <div className={`card-body ${isCorrect}`}>
                         <p className="font-weight-bold">
                           Câu {index + 1}:{" "}
-                          <span dangerouslySetInnerHTML={{ __html: question.question_text }} />
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: question.question_text,
+                            }}
+                          />
                         </p>
                         {question && question.question_img ? (
                           <div className="mb-1">
@@ -253,8 +364,16 @@ export default function Testing() {
                                   )
                                 }
                               />
+
                               <label
-                                className="form-check-block mb-1"
+                                className={`form-check-block mb-1 ${
+                                  isAnswerCorrect === key
+                                    ? "text-success"
+                                    : userRes === key &&
+                                      userRes !== isAnswerCorrect
+                                    ? "text-danger"
+                                    : ""
+                                }`}
                                 htmlFor={`answer${question.id}_${key}`}
                               >
                                 {answer.text}
@@ -293,13 +412,16 @@ export default function Testing() {
           {submitted === false ? (
             <button
               onClick={handleSubmit}
-              disabled={submitted}
+              /* disabled={submitted} */
               className="btn btn-primary w-100"
             >
               Submit
             </button>
           ) : user ? (
-            <NavLink to="/dashboard/my-exams/exam-results" className="btn btn-primary w-100">
+            <NavLink
+              to="/dashboard/my-exams/exam-results"
+              className="btn btn-primary w-100"
+            >
               Return
             </NavLink>
           ) : (

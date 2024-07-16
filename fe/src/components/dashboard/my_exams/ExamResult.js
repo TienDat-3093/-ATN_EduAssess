@@ -64,7 +64,7 @@ export default function ExamResult() {
             </table>
           </div>
         </div>
-        {totalPages == 2 && (
+        {totalPages >= 2 && (
           <div className="row mt-5 justify-content-center align-items-center">
             <div className="col-auto">
               <div className="block-27">

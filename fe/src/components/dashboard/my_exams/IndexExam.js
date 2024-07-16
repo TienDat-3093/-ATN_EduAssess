@@ -21,7 +21,23 @@ export default function IndexExam() {
 
     navigator.clipboard
       .writeText(linkToCopy)
-      .then(() => {})
+      .then(() => {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          },
+        });
+        Toast.fire({
+          icon: "success",
+          title: "Copied successfully",
+        });
+      })
       .catch((err) => {
         console.error("Không thể sao chép link: ", err);
       });
@@ -280,6 +296,7 @@ export default function IndexExam() {
                             </span>
                           </p>
                           <NavLink
+                            title="Update"
                             className="btn text-primary"
                             to={`/dashboard/my-exams/edit/${exam.id}`}
                           >
@@ -299,6 +316,7 @@ export default function IndexExam() {
                             </svg>
                           </NavLink>
                           <button
+                            title="Copy link"
                             className="btn text-muted"
                             onClick={() =>
                               handleCopyLink(
@@ -326,6 +344,7 @@ export default function IndexExam() {
                             </svg>
                           </button>
                           <NavLink
+                            title="Operation history"
                             className="btn text-warning"
                             to={`/dashboard/my-exams/user-stats/${exam.id}`}
                           >
@@ -343,6 +362,7 @@ export default function IndexExam() {
                             </svg>
                           </NavLink>
                           <button
+                            title="Delete"
                             className="btn text-danger"
                             onClick={() => handleDeleteExam(exam.id)}
                           >
@@ -397,7 +417,7 @@ export default function IndexExam() {
                   </div>
                 )}
               </div>
-              {totalPages === 2 && (
+              {totalPages >= 2 && (
                 <div className="row mt-5">
                   <div className="col">
                     <div className="block-27">

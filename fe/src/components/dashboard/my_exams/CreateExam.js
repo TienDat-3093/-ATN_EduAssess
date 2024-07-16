@@ -25,7 +25,7 @@ import {
   fetchShowQuestion,
   fetchGetQuestion,
   fetchCreateExam,
-  fetchShowExamCreate
+  fetchShowExamCreate,
 } from "../../../services/UserServices";
 export default function CreateExam() {
   const navigate = useNavigate();
@@ -44,11 +44,17 @@ export default function CreateExam() {
   const [examText, setExamText] = useState("");
   const [listQuesReturn, setListQuesReturn] = useState("");
   const [quesReturnId, setQuesReturnId] = useState([]);
-  console.log("selectedTopics", selectedTopics,selectedLevels,selectedTags);
+  const [isCreateAuto, setIsCreateAuto] = useState(true);
+  const [loadQuestionAuto, setLoadQuestionAuto] = useState("");
+  console.log("selectedTopics", selectedTopics, selectedLevels, selectedTags);
 
   console.log("load", loadQuestions);
   console.log("listQuesReturn", listQuesReturn);
   console.log("data", data);
+  const handleIsCreateAuto = (val) => {
+    setIsCreateAuto(val);
+    
+  };
   const handleUploadImage = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -122,10 +128,26 @@ export default function CreateExam() {
       const response = await fetchShowExamCreate();
       if (response) {
         setData(response.data.data[0]);
-        
       }
       console.log("resQ", response);
     } catch (error) {}
+  };
+  const getQuestionsToUser = async () => {
+    try {
+      const response = await fetchQuestionsToUser(user.id);
+      if (
+        response &&
+        response.data &&
+        response.data.data &&
+        response.data.data.length > 0
+      ) {
+        const data = response.data.data[0];
+        setLoadQuestionAuto(data);
+      }
+      console.log("ressauto", response);
+    } catch (error) {
+      console.log("err", error);
+    }
   };
   const getQuestions = async () => {
     let message;
@@ -181,14 +203,12 @@ export default function CreateExam() {
           icon: "success",
           title: response.data.message,
         });
-        
       }
-      
     } catch (error) {
       console.log("err", error);
     }
   };
-  console.log('listQuesReturn',listQuesReturn)
+  console.log("listQuesReturn", listQuesReturn);
   const handleCreateExam = async () => {
     let message;
     if (!examText) {
@@ -264,6 +284,12 @@ export default function CreateExam() {
       console.log("err", error);
     }
   };
+  useEffect(() => {
+    getQuestionsToUser();
+    if(isCreateAuto===false ||isCreateAuto===true ){
+      setListQuesReturn("");
+    }
+  }, [isCreateAuto]);
 
   useEffect(() => {
     getShowExamCreate();
@@ -287,6 +313,22 @@ export default function CreateExam() {
       setQuesReturnId(val);
     }
   }, [listQuesReturn]);
+
+  const [topPosition, setTopPosition] = useState(200);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      setTopPosition(Math.max(15, 125 - scrollTop));
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <>
@@ -319,6 +361,22 @@ export default function CreateExam() {
                   <div className="card-body">
                     <div className="tab-content" id="examTabContent">
                       {/* Tab pane for basic information */}
+                     {/*  <span
+                        className="font-weight-bold"
+                        style={{
+                          position: "fixed",
+                          top: `${topPosition}px`,
+                          right: "150px",
+                          backgroundColor: "white",
+                          padding: "10px",
+                          border: "1px solid #ccc",
+                          borderRadius: "5px",
+                          zIndex: 1000,
+                          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                        }}
+                      >
+                        hello
+                      </span> */}
                       <div
                         className="tab-pane fade show active"
                         id="simple-tabpanel-info"
@@ -397,7 +455,7 @@ export default function CreateExam() {
                           {uploadedImage && (
                             <div className="mb-3">
                               <label className="form-label">
-                              Photo uploaded:
+                                Photo uploaded:
                               </label>
                               <div>
                                 <img
@@ -504,110 +562,136 @@ export default function CreateExam() {
                             </div>
                           </div>
                           <h4 className="form-label test-dark">Question</h4>
-                          <div className="row">
-                            <div className="col-md-6 mb-3">
-                              <label htmlFor="level" className="form-label">
-                               Levels
-                              </label>
-                              <div
-                                className="checkbox-container"
-                                style={{
-                                  maxHeight: "150px",
-                                  overflowY: "auto",
-                                  border: "1px solid #ccc",
-                                  padding: "10px",
-                                }}
-                              >
-                                <ul className="list-inline">
-                                  {data && data.levels
-                                    ? data.levels.map((level, index) => (
-                                        <li className="list-inline-item">
-                                          <div className="form-check form-check-inline">
-                                            <input
-                                              type="checkbox"
-                                              className="form-check-input"
-                                              id={`level_${level.id}`}
-                                              value={level.id}
-                                              name="level"
-                                              onChange={handleLevelSelect}
-                                            />
-                                            <label
-                                              className="form-check-label"
-                                              htmlFor={`level_${level.id}`}
-                                            >
-                                              {level.name}
-                                            </label>
-                                          </div>
-                                        </li>
-                                      ))
-                                    : ""}
-                                </ul>
+                          {/* <button
+                            type="button"
+                            onClick={(e) => handleIsCreateAuto(true)}
+                            className="btn btn-secondary"
+                          >
+                            Automatic creation
+                          </button>{" "}<button
+                            type="button"
+                            onClick={(e) => handleIsCreateAuto(false)}
+                            className="btn btn-secondary"
+                            data-toggle="modal"
+                            data-target="#exampleModalLong"
+                          >
+                            Manual creation
+                          </button> */}
+                          
+                          {"  "}
+                          
+                          
+                          {isCreateAuto && (
+                            <>
+                              <div className="row">
+                                <div className="col-md-6 mb-3">
+                                  <label htmlFor="level" className="form-label">
+                                    Topics
+                                  </label>
+                                  <div
+                                    className="checkbox-container"
+                                    style={{
+                                      maxHeight: "150px",
+                                      overflowY: "auto",
+                                      border: "1px solid #ccc",
+                                      padding: "10px",
+                                    }}
+                                  >
+                                    <ul className="list-inline">
+                                      {data &&
+                                        data.topics &&
+                                        data.topics.map((topic, index) => (
+                                          <li className="list-inline-item">
+                                            <div className="form-check form-check-inline">
+                                              <input
+                                                type="checkbox"
+                                                className="form-check-input"
+                                                id={`topic_${topic.id}`}
+                                                value={topic.id}
+                                                name="topic"
+                                                onChange={handleTopicSelect}
+                                              />
+                                              <label
+                                                className="form-check-label"
+                                                htmlFor={`topic_${topic.id}`}
+                                              >
+                                                {topic.name}
+                                              </label>
+                                            </div>
+                                          </li>
+                                        ))}
+                                    </ul>
+                                  </div>
+                                </div>
+                                <div className="col-md-6 mb-3">
+                                  <label htmlFor="level" className="form-label">
+                                    Levels
+                                  </label>
+                                  <div
+                                    className="checkbox-container"
+                                    style={{
+                                      maxHeight: "150px",
+                                      overflowY: "auto",
+                                      border: "1px solid #ccc",
+                                      padding: "10px",
+                                    }}
+                                  >
+                                    <ul className="list-inline">
+                                      {data && data.levels
+                                        ? data.levels.map((level, index) => (
+                                            <li className="list-inline-item">
+                                              <div className="form-check form-check-inline">
+                                                <input
+                                                  type="checkbox"
+                                                  className="form-check-input"
+                                                  id={`level_${level.id}`}
+                                                  value={level.id}
+                                                  name="level"
+                                                  onChange={handleLevelSelect}
+                                                />
+                                                <label
+                                                  className="form-check-label"
+                                                  htmlFor={`level_${level.id}`}
+                                                >
+                                                  {level.name}
+                                                </label>
+                                              </div>
+                                            </li>
+                                          ))
+                                        : ""}
+                                    </ul>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                            <div className="col-md-6 mb-3">
-                              <label htmlFor="level" className="form-label">
-                                Topics
-                              </label>
-                              <div
-                                className="checkbox-container"
-                                style={{
-                                  maxHeight: "150px",
-                                  overflowY: "auto",
-                                  border: "1px solid #ccc",
-                                  padding: "10px",
-                                }}
-                              >
-                                <ul className="list-inline">
-                                  {data &&
-                                    data.topics &&
-                                    data.topics.map((topic, index) => (
-                                      <li className="list-inline-item">
-                                        <div className="form-check form-check-inline">
-                                          <input
-                                            type="checkbox"
-                                            className="form-check-input"
-                                            id={`topic_${topic.id}`}
-                                            value={topic.id}
-                                            name="topic"
-                                            onChange={handleTopicSelect}
-                                          />
-                                          <label
-                                            className="form-check-label"
-                                            htmlFor={`topic_${topic.id}`}
-                                          >
-                                            {topic.name}
-                                          </label>
-                                        </div>
-                                      </li>
-                                    ))}
-                                </ul>
+                              <div className="row">
+                                <div className="col-md-6 mb-3">
+                                  <label
+                                    htmlFor="quantity"
+                                    className="form-label"
+                                  >
+                                    Quantity Question{" "}
+                                    <span className="text-danger">*</span>
+                                  </label>
+                                  <div className="input-group">
+                                    <input
+                                      type="number"
+                                      className="form-control"
+                                      id="quantity"
+                                      placeholder="Nhập số lượng"
+                                      value={quantity}
+                                      onChange={handleQuantityQuestion}
+                                    />
+                                    <a
+                                      onClick={getQuestions}
+                                      className="btn btn-secondary btn-sm ml-2"
+                                    >
+                                      Create
+                                    </a>
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col-md-6 mb-3">
-                              <label htmlFor="quantity" className="form-label">
-                                Quantity Question{" "}
-                                <span className="text-danger">*</span>
-                              </label>
-                              <div className="input-group">
-                                <input
-                                  type="number"
-                                  className="form-control"
-                                  id="quantity"
-                                  placeholder="Nhập số lượng"
-                                  value={quantity}
-                                  onChange={handleQuantityQuestion}
-                                />
-                                <a
-                                  onClick={getQuestions}
-                                  className="btn btn-secondary btn-sm ml-2"
-                                >
-                                  Create
-                                </a>
-                              </div>
-                            </div>
-                          </div>
+                            </>
+                          )}
 
                           <div className="mb-3">
                             <label htmlFor="status" className="form-label">
@@ -617,6 +701,7 @@ export default function CreateExam() {
                             <table class="table table-hover text-center">
                               <thead>
                                 <tr>
+                                  <th scope="col">Stt</th>
                                   <th scope="col">Image</th>
                                   <th scope="col">Question</th>
                                   <th scope="col">Type Question</th>
@@ -628,6 +713,7 @@ export default function CreateExam() {
                                 {listQuesReturn
                                   ? listQuesReturn.map((question, index) => (
                                       <tr key={index}>
+                                        <td>{index + 1}</td>
                                         <td>
                                           {question.question_img && (
                                             <img
@@ -748,6 +834,7 @@ export default function CreateExam() {
         role="dialog"
         aria-labelledby="detailLabel"
         aria-hidden="true"
+        style={{ zIndex: 1070 }}
       >
         <div className="modal-dialog modal-dialog-centered" role="document">
           <div className="modal-content">
@@ -842,6 +929,133 @@ export default function CreateExam() {
         </div>
       </div>
       {/* End show detail answer */}
+      <div
+        class="modal fade"
+        id="exampleModalLong"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLongTitle"
+        aria-hidden="true"
+        style={{ zIndex: 1060 }}
+      >
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">
+                Modal title
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div className="container">
+                <div className="table-responsive">
+                  <table className="table table-hover">
+                    <thead>
+                      <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col">Question</th>
+                        <th scope="col">Type question</th>
+                        <th scope="col">Level</th>
+                        <th scope="col">Function</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loadQuestionAuto &&
+                        loadQuestionAuto.questions &&
+                        loadQuestionAuto.questions.map((question, index) => (
+                          <tr key={index}>
+                            <td>
+                              {question.question_img && (
+                                <img
+                                  src={question.question_url}
+                                  alt="Ảnh câu hỏi"
+                                  className="img-fluid rounded"
+                                  style={{
+                                    maxWidth: "100px",
+                                    height: "auto",
+                                  }}
+                                />
+                              )}
+                            </td>
+                            <td
+                              className="text-nowrap"
+                              style={{
+                                maxWidth: "200px",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                              aria-label={DOMPurify.sanitize(
+                                question.question_text
+                              )}
+                              dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(
+                                  question.question_text
+                                ),
+                              }}
+                            />
+                            <td>{question.type.name}</td>
+                            <td>{question.level.name}</td>
+                            <td className="ml-3">
+                              <div className="btn-group">
+                              
+
+                                <button
+                                  type="button"
+                                  className="btn btn-outline-secondary"
+                                  /* onClick={() =>
+                                                    handleDeleteQuestion(
+                                                      question.id,
+                                                      0
+                                                    )
+                                                  } */
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    fill="currentColor"
+                                    class="bi bi-box-arrow-in-down"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1z"
+                                    />
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+             
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

@@ -328,7 +328,7 @@ class ApiTestsController extends Controller
         $test->topic_data = json_encode(array_unique($data["questionTopics"]));
         $test->tag_data = json_encode(array_unique($data["tags"]));
 
-        $test->done_count = 1;
+        $test->done_count = 0;
         $test->privacy = (int)$data["privacy"];
         $test->user_id = (int)$data["userId"];
 
@@ -727,4 +727,7 @@ class ApiTestsController extends Controller
             'message' => "No haven't a test",
         ]);
     }
+
+
+
 }

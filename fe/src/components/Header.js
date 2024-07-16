@@ -121,11 +121,11 @@ export default function Header() {
                   Home
                 </NavLink>
               </li>
-              <li className="nav-item ">
+              {/* <li className="nav-item ">
                 <NavLink to="/about" className="nav-link text-dark" style={{ fontSize: '18px', }} >
                   About
                 </NavLink>
-              </li>
+              </li> */}
               <li className="nav-item ">
                 <NavLink to="/exams" className="nav-link text-dark " style={{ fontSize: '18px', }} >
                   Test
