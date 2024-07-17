@@ -25,6 +25,6 @@ class UsersSeeder extends Seeder
         $user->admin_role = 2;
         $user->status = 1;
         $user->save();
-        Users::factory()->count(10)->create();
+        // Users::factory()->count(10)->create();
     }
 }

@@ -87,7 +87,7 @@
                          Delete
                      </button>
 
-                     <button type="submit" class="btn btn-primary">Save changes</button>
+                     <button type="submit" id="submit_create" class="btn btn-primary">Save changes</button>
                  </div>
              </form>
          </div>
@@ -184,7 +184,7 @@
 
                  </div>
                  <div class="modal-footer">
-                     <button type="submit" class="edit-question-btn btn btn-primary" data-id="">Save changes</button>
+                     <button type="submit" id="submit_edit" class="edit-question-btn btn btn-primary" data-id="">Save changes</button>
                  </div>
              </form>
          </div>

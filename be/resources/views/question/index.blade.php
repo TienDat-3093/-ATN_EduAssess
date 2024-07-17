@@ -321,13 +321,20 @@
     const doneTypingInterval = 500; // 1 second
     let previousValue = { create: '', edit: '' };
     function handleInput(value, editorType, id = null) {
+        if(!value){
+            $("#submit_"+editorType).prop("disabled", true);
+        }
+        if(value == previousValue[editorType]){
+            $("#submit_"+editorType).prop("disabled", false);
+        }else{
+            $("#submit_"+editorType).prop("disabled", true);
+        }
         clearTimeout(typingTimer);
         typingTimer = setTimeout(function() {
             if(value && value !== previousValue[editorType]) {
                 previousValue[editorType] = value;
                 processInput(value,editorType,id);
             }
-            // Call your processing function here or perform any actions
         }, doneTypingInterval);
     }
 
@@ -340,6 +347,7 @@
                     _token: '{{ csrf_token() }}'
                 },
             success: function(response) {
+                $("#submit_"+editorType).prop("disabled", false);
                 var matching_questions = response.matching_questions;
                 var matching_answers = response.matching_answers;
                 var questionCount = matching_questions.length;
@@ -419,6 +427,8 @@
 <script>
     var csrfToken = '{{ csrf_token() }}';
     $(document).ready(function() {
+        $("#submit_create").prop("disabled", true);
+        $("#submit_edit").prop("disabled", true);
         $("#create_questionForm").submit(function(event) {
                 const errorAlert = $(this).find('#create_name_duplicate_error');
                 if (!errorAlert.hasClass('d-none')) {
@@ -753,25 +763,25 @@
         const answersContainer = document.getElementById(`${modalType}answersContainer`);
         const btnAddAnswer = document.getElementById(`${modalType}btnAnswer`);
 
-        // const getAnswerTemplate = (index, inputType, modalType) => `
-        // <div class ="${modalType}answerBox" id="${modalType}answerBox_${index}">
-        //     <div class="input-group mb-2">
-        //         <span class="input-group-text">
-        //             <input name="${modalType}answers[]" class="check-box form-check-input mt-0" type="${inputType}" value ="1">
-        //             <input name ="${modalType}answers[]" class="hidden-box" type="hidden" value="0">
-        //             </span>
-        //         <input type="text" name="${modalType}answerText[]" class="form-control" id ="${modalType}answerText${index}">
-        //         <label class="btn btn-outline-secondary mb-0" for="${modalType}inputAnswer${index}">
-        //             <span class="ti ti-upload"></span>
-        //         </label>
-        //         <input type="file" name="${modalType}answerImg[]" class="form-control d-none" id="${modalType}inputAnswer${index}" onchange="previewFile(event,${index},'${modalType}')">
-        //         <button type="button" class="btn btn-icon" onclick="deleteAnswer(event,${index},'${modalType}')">
-        //             <span class="ti ti-circle-minus" aria-hidden="true"></span>
-        //         </button>
-        //     </div>
-        //     <div id="${modalType}filePreview${index}" class="mt-2"></div>
-        // </div>`;
-
+        const getAnswerTemplate = (index, inputType, modalType) => `
+        <div class ="${modalType}answerBox" id="${modalType}answerBox_${index}">
+            <div class="input-group mb-2">
+                <span class="input-group-text">
+                    <input name="${modalType}answers[]" class="check-box form-check-input mt-0" type="${inputType}" value ="1">
+                    <input name ="${modalType}answers[]" class="hidden-box" type="hidden" value="0">
+                    </span>
+                <input type="text" name="${modalType}answerText[]" class="form-control" id ="${modalType}answerText${index}">
+                <label class="btn btn-outline-secondary mb-0" for="${modalType}inputAnswer${index}">
+                    <span class="ti ti-upload"></span>
+                </label>
+                <input type="file" name="${modalType}answerImg[]" class="form-control d-none" id="${modalType}inputAnswer${index}" onchange="previewFile(event,${index},'${modalType}')">
+               
+            </div>
+            <div id="${modalType}filePreview${index}" class="mt-2"></div>
+        </div>`;
+        // <button type="button" class="btn btn-icon" onclick="deleteAnswer(event,${index},'${modalType}')">
+        //     <span class="ti ti-circle-minus" aria-hidden="true"></span>
+        // </button>
 
         let template = '';
 
@@ -795,7 +805,7 @@
         } else if (typeRadio.value == '3') {
             /* resetAnswer(modalType); */
             document.getElementById(`${modalType}btnAnswer`).style.display = 'none'
-            // template = getAnswerTemplate(1, 'radio', modalType) + getAnswerTemplate(2, 'radio', modalType);
+            template = getAnswerTemplate(1, 'radio', modalType) + getAnswerTemplate(2, 'radio', modalType);
         }
         answersContainer.innerHTML = template;
 
