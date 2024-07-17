@@ -30,6 +30,7 @@ Route::prefix('/exams')->group(function (){
     Route::get('/show/{id}',[ApiTestsController::class,'show']);
     Route::get('/index-user',[ApiTestsController::class,'indexUser']);
     Route::get('/get-question',[ApiTestsController::class,'getQuestion']);
+    Route::get('/get-question-manual',[ApiTestsController::class,'getQuestionManual']);
     Route::post('/create',[ApiTestsController::class,'create']);
     Route::post('/edit',[ApiTestsController::class,'edit']);
     Route::get('/show-edit',[ApiTestsController::class,'showExamEdit']);
@@ -50,6 +51,7 @@ Route::prefix('/questions')->group(function (){
     Route::post('/create',[ApiQuestionsUserController::class,'create']);
     Route::post('/edit',[ApiQuestionsUserController::class,'edit']);
     Route::post('/delete',[ApiQuestionsUserController::class,'delete']);
+    Route::get('/inf-question',[ApiQuestionsUserController::class,'infQuestion']);
 });
 Route::prefix('/user-stats')->group(function (){
     Route::post('/create',[ApiUserStatsController::class,'create']);

@@ -27,13 +27,11 @@ class ApiQuestionsUserController extends Controller
         $userId = $request->query('userId');
 
         $listQuestions = 0;
-        if( !$itemsPerPage)
-        {
+        if (!$itemsPerPage) {
             $listQuestions = QuestionUser::where('user_id', '=', $userId)->get();
-        }
-        else{
+        } else {
             $listQuestions = QuestionUser::where('user_id', '=', $userId)->withTrashed()->skip(($currentPage - 1) * $itemsPerPage)
-            ->take($itemsPerPage)->get();
+                ->take($itemsPerPage)->get();
         }
 
         $totalQuestions = QuestionUser::whereNull('deleted_at')->where('user_id', '=', $userId)->count();
@@ -70,6 +68,57 @@ class ApiQuestionsUserController extends Controller
             'message' => 'No questions',
         ]);
     }
+    public function infQuestion(Request $request)
+    {
+        $questionId = $request->query('questionId');
+        $listTags = Tags::whereNull('deleted_at')->get();
+        $listTopics = Topics::whereNull('deleted_at')->get();
+        $listLevels = Levels::whereNull('deleted_at')->get();
+        $listTypes = QuestionTypes::whereNull('deleted_at')->get();
+        $box = [];
+        $tests = Tests::select('question_user')->get();
+
+        foreach ($tests as $test) {
+            if ($test !== NULL && $test->question_user !== null) {
+
+                if (in_array($questionId, json_decode($test->question_user))) {
+                    $box[] = [
+                        'types' => $listTypes,
+                    ];
+                    if (empty($box)) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "No data available",
+
+                        ]);
+                    }
+                    return response()->json([
+                        'success' => true,
+                        'data' => $box,
+                        'block' => 1
+                    ]);
+                }
+            }
+        }
+        $box[] = [
+            'tags' => $listTags,
+            'topics' => $listTopics,
+            'levels' => $listLevels,
+            'types' => $listTypes,
+        ];
+        if (empty($box)) {
+            return response()->json([
+                'success' => false,
+                'message' => "No data available",
+
+            ]);
+        }
+        return response()->json([
+            'success' => true,
+            'data' => $box,
+            'block' => 0
+        ]);
+    }
     public function filter(Request $request)
     {
         $currentPage = $request->query('currentPage');
@@ -78,7 +127,7 @@ class ApiQuestionsUserController extends Controller
         $topicIds = $request->query('topicIds');
         $userId = $request->query('userId');
         $query = QuestionUser::where('user_id', $userId)->skip(($currentPage - 1) * $itemsPerPage)
-        ->take($itemsPerPage);
+            ->take($itemsPerPage);
         $totalQuestions = QuestionUser::whereNull('deleted_at')->where('user_id', '=', $userId)->count();
         if (!empty($levelIds)) {
             $levelIdsArray = explode(',', $levelIds);
@@ -129,7 +178,7 @@ class ApiQuestionsUserController extends Controller
         $itemsPerPage = $request->query('itemsPerPage');
 
         $query = QuestionUser::where('user_id', '=', $userId)->skip(($currentPage - 1) * $itemsPerPage)
-        ->take($itemsPerPage);
+            ->take($itemsPerPage);
         $totalQuestions = QuestionUser::whereNull('deleted_at')->where('user_id', '=', $userId)->count();
         $query->where('question_text', 'like', "%$keyword%");
         $listQuestions = $query->withTrashed()->get();

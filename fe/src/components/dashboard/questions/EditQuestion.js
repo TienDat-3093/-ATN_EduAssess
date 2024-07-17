@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   fetchEditQuestion,
   fetchShowQuestion,
+  fetchGetInfQuestion,
 } from "../../../services/UserServices";
 import Swal from "sweetalert2";
 import SideBar from "../SideBar";
@@ -30,7 +31,8 @@ export default function EditQuestion() {
   const [selectType, setSelectType] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("");
-  const selectData = JSON.parse(selects);
+  /* const selectData = JSON.parse(selects); */
+  const [selectData,setSelectData] = useState('');
   const { id } = useParams();
   const [data, setData] = useState("");
   const [questionText, setQuestionText] = useState("");
@@ -56,6 +58,19 @@ export default function EditQuestion() {
     "topic",
     selectedTopic
   );
+  const getInfQuestion=async()=>{
+    try {
+      const response = await fetchGetInfQuestion(id);
+      if(response)
+      {
+        setSelectData(response.data.data[0]);
+      }
+      console.log('inf',response);
+    } catch (error) {
+      
+    }
+  }
+
   const isValidImageUrl = (url) => {
     const regex = /^http:\/\/localhost:8000\/.*\.(jpg|jpeg|png|gif)$/i;
     return regex.test(url);
@@ -110,14 +125,16 @@ export default function EditQuestion() {
       });
       return;
     }
+    const topicValue = document.querySelector('input[name="topic"]:checked');
+    const levelValue = document.querySelector('input[name="level"]:checked');
     const questionData = {
       user: user.id,
       adminRole: user.admin_role,
       questionId: id,
       questionText: questionText ? questionText : data.question_text,
       questionImage: uploadedImage ? uploadedImage : data.question_img,
-      topic: document.querySelector('input[name="topic"]:checked').value,
-      level: document.querySelector('input[name="level"]:checked').value,
+      topic: topicValue ? topicValue.value :selectedTopic,
+      level: levelValue ? levelValue.value :selectedLevel,
       type: selectType ? selectType : data.question_type_id,
       answers: answers.map((answer) => ({
         answerText: answer.value,
@@ -208,6 +225,7 @@ export default function EditQuestion() {
 
   useEffect(() => {
     getShowQuestion();
+    getInfQuestion();
   }, [id]);
 
   return (
@@ -343,8 +361,7 @@ export default function EditQuestion() {
                           ) : (
                             ""
                           )}
-
-                          <div className="row">
+                          {selectData.topics ?<div className="row">
                             <div className="col-md-12 mb-3">
                               <label htmlFor="major" className="form-label">
                                 Topics <span className="text-danger">*</span>
@@ -359,7 +376,7 @@ export default function EditQuestion() {
                                 }}
                               >
                                 <ul className="list-inline">
-                                  {selectData
+                                  {selectData && selectData.topics
                                     ? selectData.topics.map((topic, index) => (
                                         <li
                                           className="list-inline-item"
@@ -392,7 +409,8 @@ export default function EditQuestion() {
                                 </ul>
                               </div>
                             </div>
-                          </div>
+                          </div>:""}
+                          
 
                           <div className="row">
                             <div className="col-md-6 mb-3">
@@ -410,7 +428,7 @@ export default function EditQuestion() {
                                 }}
                               >
                                 <ul className="list-inline">
-                                  {selectData
+                                  {selectData && selectData.types
                                     ? selectData.types.map((type, index) => (
                                         <li
                                           className="list-inline-item"
@@ -440,7 +458,7 @@ export default function EditQuestion() {
                                 </ul>
                               </div>
                             </div>
-                            <div className="col-md-6 mb-3">
+                            {selectData.levels? <div className="col-md-6 mb-3">
                               <label htmlFor="level" className="form-label">
                                 Levels <span className="text-danger">*</span>
                               </label>
@@ -454,7 +472,7 @@ export default function EditQuestion() {
                                 }}
                               >
                                 <ul className="list-inline">
-                                  {selectData
+                                  {selectData && selectData.levels
                                     ? selectData.levels.map((level, index) => (
                                         <li
                                           className="list-inline-item"
@@ -486,7 +504,8 @@ export default function EditQuestion() {
                                     : ""}
                                 </ul>
                               </div>
-                            </div>
+                            </div>:''}
+                           
                           </div>
 
                           <div className="mb-3">

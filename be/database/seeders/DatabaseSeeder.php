@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             LevelsSeeder::class,
-            // TopicsSeeder::class,
+            TopicsSeeder::class,
             QuestionTypesSeeder::class,
             UsersSeeder::class,
             // QuestionsAdminSeeder::class,
