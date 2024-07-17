@@ -125,7 +125,7 @@ class UsersController extends Controller
         if ($searchInput != null || $active != null) {
             return $this->search($request);
         }
-        $listUsers = Users::where('admin_role', 0)->paginate($show);
+        $listUsers = Users::where('admin_role', 0)->where('id','!=',0)->paginate($show);
         return view('user/index', compact('listUsers'));
     }
     public function search(Request $request)
@@ -141,6 +141,7 @@ class UsersController extends Controller
             $query->where('displayname', 'like', "%$searchInput%")
                   ->orWhere('email', 'like', "%$searchInput%");
         })
+        ->where('id','!=',0)
         ->where('admin_role', 0)
         ->when($active != null, function ($query) use ($active) {
             $query->where('status', $active);
@@ -165,12 +166,18 @@ class UsersController extends Controller
         return back()->with(['success' => true, 'alert' => 'Successfully created!']);
     }
     public function getUser($id){
-        $user = Users::where('admin_role', 0)->find($id);
+        $user = Users::where('admin_role', 0)->where('id','!=',0)->find($id);
+        if (!$user) {
+            return back()->with(['success' => false, 'alert' => 'User not found']);
+        }
         return $user;
     }
     public function editHandle(Request $request, $id)
     {
-        $user = Users::where('admin_role', 0)->find($id);
+        $user = Users::where('admin_role', 0)->where('id','!=',0)->find($id);
+        if (!$user) {
+            return back()->with(['success' => false, 'alert' => 'User not found']);
+        }
         $user->displayname = $request->displayname;
         $user->date_of_birth = $request->date_of_birth;
         if ($request->hasFile("image")) {
@@ -190,7 +197,7 @@ class UsersController extends Controller
     }
     public function delete($id)
     {
-        $user = Users::where('admin_role', 0)->find($id);
+        $user = Users::where('admin_role', 0)->where('id','!=',0)->find($id);
         if (!$user) {
             return back()->with(['success' => false, 'alert' => 'User not found']);
         }

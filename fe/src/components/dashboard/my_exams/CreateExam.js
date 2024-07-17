@@ -344,7 +344,6 @@ export default function CreateExam() {
                     <div className="d-flex justify-content-between align-items-center">
                       <h3 className="mb-2">Add exam</h3>
                       <button
-                        onClick="{onBacktoIndex}"
                         className="btn btn-secondary mb-2"
                       >
                         <NavLink

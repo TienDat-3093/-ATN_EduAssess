@@ -133,7 +133,7 @@
                 <form action="{{ route('user.importUsers') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                         <p class="form-label">Your file</p>
-                        <input type="file" name="importAdmins_file" class="form-control" accept=".xlsx">
+                        <input type="file" name="importUsers_file" class="form-control" accept=".xlsx">
                     <br>
                     <button type="submit" class="btn btn-primary">Import Users</button>
                 </form>

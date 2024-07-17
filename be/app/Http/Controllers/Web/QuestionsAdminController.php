@@ -78,6 +78,13 @@ class QuestionsAdminController extends Controller
     }
     public function importQuestions(Request $re)
     {
+        $topicsCount = Topics::count();
+        $questionTypesCount = QuestionTypes::count();
+        $usersCount = Users::count();
+        $levelsCount = Levels::count();
+        if ($topicsCount == 0 || $questionTypesCount == 0 || $usersCount == 0 || $levelsCount == 0) {
+            return redirect()->back()->with(['success' => false, 'alert' => "Import failed! Please make sure Topics, QuestionsTypes, Users and Level has data."]);
+        }
         if($re->hasFile('importQuestions_file') && $re->hasFile('importAnswers_file')){
             $questionsFile = $re->file('importQuestions_file');
             $answersFile = $re->file('importAnswers_file');
@@ -85,14 +92,22 @@ class QuestionsAdminController extends Controller
             $answersExtension = strtolower($answersFile->getClientOriginalExtension());
             if ($questionsExtension == 'xlsx' && $answersExtension == 'xlsx' ) {
                 try {
-                    Excel::import(new ImportQuestionsAdmin, $questionsFile);
-                    Excel::import(new ImportAnswersAdmin, $answersFile);
+                    $questionAdminCount = QuestionsAdmin::count();
+                    $answerAdminCount = AnswersAdmin::count();
+                    if($questionAdminCount == 0)
+                        Excel::import(new ImportQuestionsAdmin, $questionsFile);
+                    if($answerAdminCount == 0){
+                        Excel::import(new ImportAnswersAdmin, $answersFile);
+                    }
+                    if($questionAdminCount != 0 && $answerAdminCount != 0){
+                        return redirect()->back()->with(['success' => false, 'alert' => "Import failed! Tables already has data, please clear them if you need to import."]);
+                    }
                     return redirect()->back()->with(['success' => true, 'alert' => "Import successful"]);
                 } catch (\Exception $e) {
                     if (isset($e->errorInfo) && $e->errorInfo[1] == 1062) { // Error code for duplicate entry in MySQL
                         return redirect()->back()->with(['success' => false, 'alert' => "Import failed! File contains duplicate entries which violates constraints."]);
                     } else{
-                        return redirect()->back()->with(['success' => false, 'alert' => "Import failed. If your files are correct please make sure ['topics','users','levels','question_types'] have been imported!". $e->getMessage()]);
+                        return redirect()->back()->with(['success' => false, 'alert' => "Import failed! Please check your files!". $e->getMessage()]);
                     }
                 }
             } else {
