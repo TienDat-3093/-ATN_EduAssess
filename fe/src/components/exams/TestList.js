@@ -246,7 +246,7 @@ export default function TestList() {
                     loadFilter.tags.map((tag, index) => {
                       return (
                         <>
-                          <label htmlFor={`topic_${tag.id}`}>
+                          <label htmlFor={`tag_${tag.id}`}>
                             <input
                               type="checkbox"
                               id={`tag_${tag.id}`}

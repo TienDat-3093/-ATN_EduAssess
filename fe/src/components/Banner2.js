@@ -3,7 +3,7 @@ export default function Banner2() {
     <>
       <section
         className="hero-wrap hero-wrap-2"
-        style={{ backgroundImage: 'url("../../images/bg_2.jpg")',height:'30px' }}
+        style={{ backgroundImage: 'url("../../images/work-2.jpg")',height:'30px' }}
       >
         {/* <div className="overlay" />
         <div className="container">
