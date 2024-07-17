@@ -295,6 +295,36 @@ class ApiTestsController extends Controller
         ]);
     }
 
+    public function getQuestionManual(Request $request)
+    {
+        $userId = $request->query('userId');
+        $questionId = $request->query('questionId');
+        $query = QuestionUser::whereNull('deleted_at')->where('user_id', $userId)->withTrashed();
+
+        if (!empty($questionId)) {
+
+            $query->where('id',$questionId);
+        }
+
+        $listQuestions = $query->get();
+        foreach ($listQuestions as $question) {
+            $question->question_url = asset($question->question_img);
+            $question->level = Levels::find($question->level_id);
+            $question->topic = Topics::find($question->topic_id);
+            $question->type = QuestionTypes::find($question->question_type_id);
+        }
+
+        $processed = [];
+        $processed[] = [
+            'questions' => $listQuestions,
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $processed,
+        ]);
+    }
+
     public function create(Request $request)
     {
 

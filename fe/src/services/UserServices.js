@@ -213,6 +213,22 @@ const fetchGetQuestion = (
 };
 export { fetchGetQuestion };
 
+const fetchGetQuestionManual = (
+  userId,questionId
+) => {
+  return axios.get(`http://localhost:8000/api/exams/get-question-manual`, {
+    params: { userId,questionId },
+  });
+};
+export { fetchGetQuestionManual };
+
+const fetchGetInfQuestion = (questionId) => {
+  return axios.get(`http://localhost:8000/api/questions/inf-question`, {
+    params: { questionId },
+  });
+};
+export { fetchGetInfQuestion };
+
 const fetchCreateExam = (formData) => {
   return axios.post(
     "http://localhost:8000/api/exams/create",

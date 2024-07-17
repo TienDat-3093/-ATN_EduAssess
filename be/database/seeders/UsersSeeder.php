@@ -25,6 +25,17 @@ class UsersSeeder extends Seeder
         $user->admin_role = 2;
         $user->status = 1;
         $user->save();
-        Users::factory()->count(10)->create();
+
+        $user = new Users();
+        $user->id = 2;
+        $user->displayname = 'Tien dat';
+        $user->email = 'tiendat@gmail.com';
+        $user->password = Hash::make('123456');
+        $user->date_of_birth = Carbon::parse('2003-10-10');
+        $user->admin_role = 0;
+        $user->status = 1;
+        $user->save();
+
+        /* Users::factory()->count(10)->create(); */
     }
 }

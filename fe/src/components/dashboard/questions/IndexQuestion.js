@@ -143,7 +143,7 @@ export default function IndexQuestion() {
         swalWithBootstrapButtons.fire({
           title: response.data.message,
 
-          icon: "success",
+          icon: response.data.success ? "success":"warning",
         });
         triggerReload();
       } else if (result.dismiss === Swal.DismissReason.cancel) {

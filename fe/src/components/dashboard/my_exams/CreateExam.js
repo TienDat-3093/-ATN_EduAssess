@@ -26,6 +26,7 @@ import {
   fetchGetQuestion,
   fetchCreateExam,
   fetchShowExamCreate,
+  fetchGetQuestionManual,
 } from "../../../services/UserServices";
 export default function CreateExam() {
   const navigate = useNavigate();
@@ -46,14 +47,14 @@ export default function CreateExam() {
   const [quesReturnId, setQuesReturnId] = useState([]);
   const [isCreateAuto, setIsCreateAuto] = useState(true);
   const [loadQuestionAuto, setLoadQuestionAuto] = useState("");
+  const [questionManual, setQuestionManual] = useState("");
   console.log("selectedTopics", selectedTopics, selectedLevels, selectedTags);
 
   console.log("load", loadQuestions);
   console.log("listQuesReturn", listQuesReturn);
-  console.log("data", data);
+  console.log("isCreateAuto", isCreateAuto);
   const handleIsCreateAuto = (val) => {
     setIsCreateAuto(val);
-    
   };
   const handleUploadImage = (e) => {
     const file = e.target.files[0];
@@ -98,6 +99,57 @@ export default function CreateExam() {
   };
   const handelPassword = (e) => {
     setPassword(e.target.value);
+  };
+  const handelGetQuestionManual = async (id) => {
+    try {
+      /* console.log(id, "=", loadQuestions && loadQuestions.questions[0].id); */
+      const isDuplicate =
+        listQuesReturn && listQuesReturn.some((question) => question.id === id);
+      if (isDuplicate) {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          },
+        });
+        Toast.fire({
+          icon: "warning",
+          title: "Duplicate questions cannot be added",
+        });
+        return;
+      } else {
+        const response = await fetchGetQuestionManual(user.id, id);
+
+        if (response) {
+          setLoadQuestions(response.data.data[0]);
+
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          });
+
+          Toast.fire({
+            icon: "success",
+            title: "Question added successfully",
+          });
+        }
+        console.log("questionManual", response);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   const handlePrivacy = (e) => {
@@ -151,12 +203,14 @@ export default function CreateExam() {
   };
   const getQuestions = async () => {
     let message;
-    if (!selectedLevels || selectedLevels.length === 0) {
-      message = "Please select a level";
-    } else if (!selectedTopics || selectedTopics.length === 0) {
-      message = "Please select a topic";
-    } else if (!quantity || quantity === "") {
-      message = "Please enter the number of questions";
+    if (isCreateAuto === true) {
+      if (!selectedLevels || selectedLevels.length === 0) {
+        message = "Please select a level";
+      } else if (!selectedTopics || selectedTopics.length === 0) {
+        message = "Please select a topic";
+      } else if (!quantity || quantity === "") {
+        message = "Please enter the number of questions";
+      }
     }
 
     if (message) {
@@ -211,16 +265,20 @@ export default function CreateExam() {
   console.log("listQuesReturn", listQuesReturn);
   const handleCreateExam = async () => {
     let message;
+
+    if (isCreateAuto === true) {
+      if (!selectedLevels || selectedLevels.length === 0) {
+        message = "Please select levels";
+      } else if (!selectedTopics || selectedTopics.length === 0) {
+        message = "Please select topics";
+      } else if (!quantity || quantity === "") {
+        message = "Please enter the quantity questions";
+      }
+    }
     if (!examText) {
       message = "Please enter the name of the test";
     } else if (!selectedTags || selectedTags.length === 0) {
       message = "Please select tags";
-    } else if (!selectedLevels || selectedLevels.length === 0) {
-      message = "Please select levels";
-    } else if (!selectedTopics || selectedTopics.length === 0) {
-      message = "Please select topics";
-    } else if (!quantity || quantity === "") {
-      message = "Please enter the quantity questions";
     } else if (!listQuesReturn || listQuesReturn.length === 0) {
       message = "Please create question";
     }
@@ -241,6 +299,7 @@ export default function CreateExam() {
         icon: "warning",
         title: message,
       });
+      return;
     }
 
     try {
@@ -251,7 +310,9 @@ export default function CreateExam() {
         privacy: privacy,
         password: password,
         questionLevels: selectedLevels,
-        questionTopics: selectedTopics,
+        questionTopics: Array.from(
+          new Set(listQuesReturn.map((question) => question.topic_id))
+        ),
         quantityQuestion: quantity,
         questions: listQuesReturn.map((question) => ({
           questionId: question.id,
@@ -259,36 +320,58 @@ export default function CreateExam() {
         userId: user.id,
       };
       console.log("foemDra", formData);
-      const response = await fetchCreateExam(formData);
-      if (response) {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-          },
-        });
-        Toast.fire({
-          icon: "success",
-          title: response.data.message,
-        });
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-danger",
+        },
+        buttonsStyling: false,
+      });
 
-        navigate("/dashboard/my-exams");
+      const result = await swalWithBootstrapButtons.fire({
+        title: "Are you sure?",
+        text: `Add exam with ${listQuesReturn.length} questions`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, add it!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true,
+      });
+
+      if (result.isConfirmed) {
+        const response = await fetchCreateExam(formData);
+        if (response) {
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          });
+          Toast.fire({
+            icon: "success",
+            title: response.data.message,
+          });
+
+          navigate("/dashboard/my-exams");
+        }
+        console.log("ressss", response);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        return;
       }
-      console.log("ressss", response);
     } catch (error) {
       console.log("err", error);
     }
   };
   useEffect(() => {
     getQuestionsToUser();
-    if(isCreateAuto===false ||isCreateAuto===true ){
+    /* if (isCreateAuto === false || isCreateAuto === true) {
       setListQuesReturn("");
-    }
+    } */
   }, [isCreateAuto]);
 
   useEffect(() => {
@@ -361,7 +444,7 @@ export default function CreateExam() {
                   <div className="card-body">
                     <div className="tab-content" id="examTabContent">
                       {/* Tab pane for basic information */}
-                     {/*  <span
+                      {/*  <span
                         className="font-weight-bold"
                         style={{
                           position: "fixed",
@@ -562,13 +645,14 @@ export default function CreateExam() {
                             </div>
                           </div>
                           <h4 className="form-label test-dark">Question</h4>
-                          {/* <button
+                          <button
                             type="button"
                             onClick={(e) => handleIsCreateAuto(true)}
                             className="btn btn-secondary"
                           >
                             Automatic creation
-                          </button>{" "}<button
+                          </button>{" "}
+                          <button
                             type="button"
                             onClick={(e) => handleIsCreateAuto(false)}
                             className="btn btn-secondary"
@@ -576,11 +660,8 @@ export default function CreateExam() {
                             data-target="#exampleModalLong"
                           >
                             Manual creation
-                          </button> */}
-                          
+                          </button>
                           {"  "}
-                          
-                          
                           {isCreateAuto && (
                             <>
                               <div className="row">
@@ -692,7 +773,6 @@ export default function CreateExam() {
                               </div>
                             </>
                           )}
-
                           <div className="mb-3">
                             <label htmlFor="status" className="form-label">
                               List Question{" "}
@@ -942,7 +1022,7 @@ export default function CreateExam() {
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLongTitle">
-                Modal title
+                Add Question Manual
               </h5>
               <button
                 type="button"
@@ -1004,17 +1084,12 @@ export default function CreateExam() {
                             <td>{question.level.name}</td>
                             <td className="ml-3">
                               <div className="btn-group">
-                              
-
                                 <button
                                   type="button"
                                   className="btn btn-outline-secondary"
-                                  /* onClick={() =>
-                                                    handleDeleteQuestion(
-                                                      question.id,
-                                                      0
-                                                    )
-                                                  } */
+                                  onClick={() =>
+                                    handelGetQuestionManual(question.id)
+                                  }
                                 >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1051,7 +1126,6 @@ export default function CreateExam() {
               >
                 Close
               </button>
-             
             </div>
           </div>
         </div>
