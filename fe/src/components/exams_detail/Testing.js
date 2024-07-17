@@ -114,9 +114,9 @@ export default function Testing() {
           text: "Are you sure to submit your exam?",
           icon: "warning",
           showCancelButton: true,
-          confirmButtonText: "Yes, delete it!",
+          confirmButtonText: "Yes",
 
-          cancelButtonText: "No, cancel!",
+          cancelButtonText: "No",
           reverseButtons: true,
         })
         .then((result) => {

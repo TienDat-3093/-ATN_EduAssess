@@ -266,7 +266,7 @@ export default function CreateExam() {
   const handleCreateExam = async () => {
     let message;
 
-    if (isCreateAuto === true) {
+    /* if (isCreateAuto === true) {
       if (!selectedLevels || selectedLevels.length === 0) {
         message = "Please select levels";
       } else if (!selectedTopics || selectedTopics.length === 0) {
@@ -274,7 +274,7 @@ export default function CreateExam() {
       } else if (!quantity || quantity === "") {
         message = "Please enter the quantity questions";
       }
-    }
+    } */
     if (!examText) {
       message = "Please enter the name of the test";
     } else if (!selectedTags || selectedTags.length === 0) {

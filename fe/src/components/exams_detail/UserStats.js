@@ -38,8 +38,8 @@ export default function UserStats() {
                 <tr>
                   <th>User</th>
                   <th>total questions</th>
-                  <th>Correct sentences</th>
-                  <th>Incorrect sentences</th>
+                  <th>Correct question</th>
+                  <th>Incorrect question</th>
                   <th>Completion time</th>
                   <th>Exam end time</th>
                 </tr>

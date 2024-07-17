@@ -362,6 +362,7 @@ export default function IndexQuestion() {
                                   <table className="table table-hover">
                                     <thead>
                                       <tr>
+                                        {/* <th scope="col">Stt</th> */}
                                         <th scope="col">Image</th>
                                         <th scope="col">Question</th>
                                         <th scope="col">Type question</th>
@@ -372,6 +373,7 @@ export default function IndexQuestion() {
                                     <tbody>
                                       {data.questions.map((question, index) => (
                                         <tr key={index}>
+                                          {/* <td>{index+1}</td> */}
                                           <td>
                                             {question.question_img && (
                                               <img

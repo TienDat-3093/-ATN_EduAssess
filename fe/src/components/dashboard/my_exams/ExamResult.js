@@ -36,10 +36,10 @@ export default function ExamResult() {
             <table className="table table-hover">
               <thead className="thead-light">
                 <tr>
-                  <th>Name Exam</th>
-                  <th>Total Question</th>
-                  <th>Correct Sentences</th>
-                  <th>Incorrect Sentences</th>
+                  <th>Name exam</th>
+                  <th>Total question</th>
+                  <th>Correct question</th>
+                  <th>Incorrect question</th>
                   <th>Complete time</th>
                   <th>Exam end time</th>
                 </tr>

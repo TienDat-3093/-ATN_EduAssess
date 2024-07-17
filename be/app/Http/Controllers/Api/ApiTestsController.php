@@ -439,6 +439,9 @@ class ApiTestsController extends Controller
         {
             $test->password = $data["password"];
         }
+        else{
+            $test->password ='';
+        }
 
 
         $test->privacy = (int)$data["privacy"];
